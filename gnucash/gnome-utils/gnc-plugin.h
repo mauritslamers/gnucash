@@ -291,6 +291,27 @@ void gnc_plugin_update_actions (GtkActionGroup *action_group,
                                 const gchar *property_name,
                                 gboolean value);
 
+/**
+ *  Update a property on a GtkAction. This function can be used
+ *  to update label or tooltip values.
+ *  @param action_group The group of all actions associated with a
+ *  plugin or plugin page.  All actions to be modified must be
+ *  contained in this group.
+ *
+ *  @param action_name The action name that should be modified.
+ *
+ *  @param property_name The property name to be changed on the
+ *  specified action. The only two GtkAction properties that it makes
+ *  sense to modify are "label" and "tooltip".
+ *
+ *  @param value A string specifying the new value for the specified
+ *  property.
+ *
+ */
+void gnc_plugin_update_action (GtkActionGroup *action_group,
+                                const gchar *action_name,
+                                const gchar *property_name,
+                                const gchar *value);
 
 /** Load a new set of actions into an existing UI.  The actions from
  *  the provided group will be merged into the pre-existing ui, as

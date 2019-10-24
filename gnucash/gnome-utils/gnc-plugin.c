@@ -309,6 +309,31 @@ gnc_plugin_update_actions (GtkActionGroup *action_group,
 }
 
 
+void
+gnc_plugin_update_action (GtkActionGroup *action_group,
+                                const gchar *action_name,
+                                const gchar *property_name,
+                                const gchar *value)
+{
+    GValue gvalue = "";
+    gint i;
+    GtkAction *action;
+
+    g_value_init(&gvalue, G_TYPE_STRING);
+    g_value_set_static_string(&gvalue, value);
+    action = gtk_action_group_get_action(action_group, action_name);
+    if (action)
+    {
+        g_object_set_property(G_OBJECT(action), property_name, &gvalue);
+    }
+    else
+    {
+        g_warning("No such action with name '%s' in action group %s (size %d)",
+                  action_name, gtk_action_group_get_name(action_group),
+                  g_list_length(gtk_action_group_list_actions(action_group)));
+    }
+}
+
 /** Load a new set of actions into an existing UI.
  *
  *  See gnc-plugin.h for documentation on the function arguments. */
