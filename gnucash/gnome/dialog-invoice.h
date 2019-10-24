@@ -77,7 +77,7 @@ gchar *gnc_invoice_get_help (InvoiceWindow *iw);
 
 gchar *gnc_invoice_get_title (InvoiceWindow *iw);
 
-GncInvoiceType *get_invoice_get_type (InvoiceWindow *iw);
+GncInvoiceType gnc_invoice_get_type_from_window (InvoiceWindow *iw);
 
 #ifdef __GNC_PLUGIN_PAGE_H
 #include "gnc-main-window.h"

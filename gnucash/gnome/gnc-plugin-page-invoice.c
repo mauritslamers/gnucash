@@ -263,16 +263,17 @@ static const gchar *can_unpost_actions[] =
 };
 
 static const gchar *parametrized_actions[] =
-    {
-        "FilePrintAction",
-        "EditEditInvoiceAction",
-        "EditDuplicateInvoiceAction",
-        "EditPostInvoiceAction",
-        "EditUnpostInvoiceAction",
-        "BusinessNewInvoiceAction",
-        "ToolsProcessPaymentAction",
-        "BlankEntryAction",
-        "ReportsCompanyReportAction"}
+{
+    "FilePrintAction",
+    "EditEditInvoiceAction",
+    "EditDuplicateInvoiceAction",
+    "EditPostInvoiceAction",
+    "EditUnpostInvoiceAction",
+    "BusinessNewInvoiceAction",
+    "ToolsProcessPaymentAction",
+    "BlankEntryAction",
+    "ReportsCompanyReportAction"
+};
 
 static guint parametrized_n_actions = G_N_ELEMENTS(parametrized_actions);
 
@@ -418,13 +419,15 @@ gnc_plugin_page_invoice_update_menus (GncPluginPage *page, gboolean is_posted, g
     GtkActionGroup *action_group;
     GncPluginPageInvoicePrivate *priv;
     GncInvoiceType invoice_type;
-    gchar invoice_type_name;
-    GtkAction action;
+    gchar *invoice_type_name;
+    GtkActionEntry action;
     gint i, j;
+ 
+ 
 
     gboolean is_readonly = qof_book_is_readonly(gnc_get_current_book());
     priv = GNC_PLUGIN_PAGE_INVOICE_GET_PRIVATE(page);
-    invoice_type = gnc_invoice_get_type(priv->iw);
+    invoice_type = gnc_invoice_get_type_from_window(priv->iw);
 
     switch (invoice_type) {
         case GNC_INVOICE_UNDEFINED:
@@ -467,23 +470,21 @@ gnc_plugin_page_invoice_update_menus (GncPluginPage *page, gboolean is_posted, g
     gnc_plugin_update_actions (action_group, invoice_book_readwrite_actions,
                                "sensitive", !is_readonly);
 
-    gchar action_name;
-    gchar parametrized_label, parametrized_tooltip;
+
     for (i = 0; i < parametrized_n_actions; i++)
     {
-        action_name = parametrized_actions[i];
+        const gchar *action_name = parametrized_actions[i];
         // need action by name, check whether in plugin page actions
         for (j = 0; j < gnc_plugin_page_invoice_n_actions; j++)
         {
             action = gnc_plugin_page_invoice_actions[j];
-            if (action_name == action->name) {
+            if (action_name == action.name) {
                 // found the action, update label and tooltip
-                parametrized_label = action->label;
-                parametrized_tooltip = action->tooltip;
-                gnc_plugin_update_action (action_group, action_name,
-                            "label", format ( _(parametrized_label), invoice_type_name);
-                gnc_plugin_update_action (action_group, action_name,
-                            "tooltip", format ( _(parametrized_tooltip), invoice_type_name);
+                const gchar *parametrized_label = action.label;
+                const gchar *parametrized_tooltip = action.tooltip;
+                GtkAction *gtk_action = gtk_action_group_get_action(action_group, action_name);
+                gtk_action_set_label(gtk_action, g_strdup_printf( _(parametrized_label), invoice_type_name));
+                gtk_action_set_tooltip(gtk_action, g_strdup_printf( _(parametrized_tooltip), invoice_type_name));
             }
         }
     }

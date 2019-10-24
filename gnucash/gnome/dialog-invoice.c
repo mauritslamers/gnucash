@@ -1949,7 +1949,7 @@ gnc_invoice_update_window (InvoiceWindow *iw, GtkWidget *widget)
 }
 
 GncInvoiceType
-gnc_invoice_get_type(InvoiceWindow *iw)
+gnc_invoice_get_type_from_window(InvoiceWindow *iw)
 {
     /* uses the same approach as gnc_invoice_get_title */
     switch (gncOwnerGetType(&iw->owner))

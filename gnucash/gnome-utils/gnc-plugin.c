@@ -315,7 +315,7 @@ gnc_plugin_update_action (GtkActionGroup *action_group,
                                 const gchar *property_name,
                                 const gchar *value)
 {
-    GValue gvalue = "";
+    GValue gvalue;
     gint i;
     GtkAction *action;
 
