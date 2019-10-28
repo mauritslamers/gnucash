@@ -7,6 +7,6 @@ PATH C:\%MSYS2_DIR%\%MSYSTEM%\bin;C:\%MSYS2_DIR%\usr\bin;%PATH%
 bash -lc "sed -i 's/^CheckSpace/#CheckSpace/g' /etc/pacman.conf"
 
 cd c:\gnucash-on-windows
-bash -lc "TARGET=gnucash-maint jhbuild -f jhbuildrc build"
+TARGET=gnucash-maint jhbuild -f jhbuildrc build
 
 @echo off
