@@ -1,0 +1,119 @@
+
+
+platform:
+  - x86
+  - x64
+environment:
+  matrix:
+    - compiler: msys2
+      ARCH: x64
+      MSYS2_ARCH: x86_64
+      MSYS2_DIR: msys64
+      MSYSTEM: MINGW64
+  - compiler: msys2
+      ARCH: x86
+      MSYS2_ARCH: i686
+      MSYS2_DIR: msys64
+      MSYSTEM: MINGW32
+
+matrix:
+  allow_failures:
+    # - platform: x64
+    #   nodejs_version: "0.10"
+    # - platform: x86
+    #   nodejs_version: "0.10"
+    # - platform: x64
+    #   nodejs_version: "4.0"
+    # - platform: x86
+    #   nodejs_version: "4.0"
+    # - platform: x64
+    #   nodejs_version: "5.0"
+    # - platform: x86
+    #   nodejs_version: "5.0"
+init:
+  - git config --global core.autocrlf true
+install:
+  - git clone https://github.com/gnucash/gnucash-on-windows c:\gnucash-on-windows
+
+  #- ps: Write-Host c:\projects\node-canvas-builder\packed\win_$env:platform`_$env:nodejs_version.zip
+  - ps: >-
+      if ($Env:PLATFORM -eq "x86") {
+        Start-FileDownload "http://ftp.gnome.org/pub/GNOME/binaries/win32/gtk+/2.24/gtk+-bundle_2.24.10-20120208_win32.zip" -FileName gtk.zip
+        Install-Product node $env:nodejs_version
+      }
+      else {
+        Start-FileDownload "http://ftp.gnome.org/pub/GNOME/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.1-20101229_win64.zip" -FileName gtk.zip
+        Install-Product node $env:nodejs_version x64
+      }
+      7z x -oC:\GTK gtk.zip | Out-Null
+  - ps: >-
+      if ($Env:PLATFORM -eq "x86") {
+        Copy-Item c:\GTK\bin\freetype6.dll -Destination c:\GTK\bin\libfreetype-6.dll
+      }
+  - dir C:\GTK
+  - cmd: SET PATH=C:\gtk\bin;%PATH%
+  - git clone https://github.com/Automattic/node-canvas --branch v1.3.7 c:\node-canvas
+  - git clone https://github.com/mauritslamers/node-canvas-bin c:\node-canvas-bin
+  - ps: >-
+      if ($Env:nodejs_version -ge "6.0") {
+        npm install -g npm@next
+      }
+  - npm install node-gyp -g
+  - cd c:\node-canvas
+  - npm install
+  - mkdir c:\projects\node-canvas-builder\package
+  - mkdir c:\projects\node-canvas-builder\package\binlib
+  - mkdir c:\projects\node-canvas-builder\package\test
+  - xcopy /e c:\node-canvas-bin\* c:\projects\node-canvas-builder\package
+  - xcopy /e c:\projects\node-canvas-builder\test c:\projects\node-canvas-builder\package\test
+  - copy c:\node-canvas\build\Release\*.dll c:\projects\node-canvas-builder\package\binlib
+  - copy c:\node-canvas\build\Release\canvas.node c:\projects\node-canvas-builder\package\binlib\canvas.node
+  - mkdir c:\projects\node-canvas-builder\packed
+build: false
+
+test_script:
+  # Output useful info for debugging.
+  - node --version
+  - npm --version
+  - dir c:\projects\node-canvas-builder\package\binlib
+  # run tests
+  - cd c:\projects\node-canvas-builder\package\test
+  - node test.js
+  #- ps: 7z a c:\projects\node-canvas-builder\packed\win_$env:platform`_$env:nodejs_version.zip c:\projects\node-canvas-builder\package\*
+  - cd c:\projects\node-canvas-builder\packed
+  - npm pack c:\projects\node-canvas-builder\package
+  - ps: Rename-Item c:\projects\node-canvas-builder\packed\canvas-bin-1.3.7.tgz win_$env:platform`_$env:nodejs_version.tar.gz
+  - dir c:\projects\node-canvas-builder\packed
+artifacts:
+  # - path: node-canvas-builder\win_$(platform)_$(env:node_version).zip
+  - path: packed\*.tar.gz
+    name: package
+  #   name: win
+
+  #   name: win$(env:PLATFORM)_$(env:nodejs_version)
+  #   type: zip
+deploy:
+  provider: GitHub
+  #artifact: win_$(platform)_$(Env:nodejs_version).zip
+  artifact: package
+  auth_token:
+    secure: VOpd1LzyZp339s73kSoR47YMHImz8uN8cGCB/9tBnXBjmh8TlC1mMqTgUdAlCKPI
+  on:
+    branch: master
+    appveyor_repo_tag: true        # deploy on tag push only
+
+
+    © 2019 GitHub, Inc.
+    Terms
+    Privacy
+    Security
+    Status
+    Help
+
+    Contact GitHub
+    Pricing
+    API
+    Training
+    Blog
+    About
+
