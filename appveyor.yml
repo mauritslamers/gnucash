@@ -28,7 +28,7 @@ environment:
 init:
   - git config --global core.autocrlf true
 install:
-  - git clone https://github.com/gnucash/gnucash-on-windows c:\gnucash-on-windows
+  - git clone https://github.com/mauritslamers/gnucash-on-windows c:\gnucash-on-windows
   - ps: c:\gnucash-on-windows\setup-mingw64.ps1
 
 build_script:
