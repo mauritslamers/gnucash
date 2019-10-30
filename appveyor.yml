@@ -10,7 +10,7 @@ environment:
       MSYS2_ARCH: i686
       MSYS2_DIR: msys64
       MSYSTEM: MINGW32
-
+build: false
 # matrix:
 #   allow_failures:
 #     # - platform: x64
@@ -33,6 +33,9 @@ install:
 
 build_script:
   - '%APPVEYOR_BUILD_FOLDER%\appveyor.bat build'
+
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 # test_script:
 #   # Output useful info for debugging.
